@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from mongoengine import connect
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '7+$!qknh^83y5ij$%+=o!*nmc(ce7s5g3!mub2+e^dt(2z4=3%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -37,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_mongoengine',
+    'rbrlog.apps.RbrlogConfig',
+    'django_mongoengine.mongo_admin',
 ]
 
 MIDDLEWARE = [
@@ -73,14 +77,48 @@ WSGI_APPLICATION = 'RbR_edu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+     'default': {
+          'ENGINE': 'django.db.backends.dummy'
+     }
 }
 
 
+AUTHENTICATION_BACKENDS = (
+               'django_mongoengine.mongo_auth.backends.MongoEngineBackend',
+ )
+# AUTH_USER_MODEL = 'rbrlog.User'
+MONGOENGINE_USER_DOCUMENT = 'django_mongoengine.django.auth.User'
+
+
+# MONGO_USER = 'mohammad'
+# MONGO_PASS = 'herman'
+# MONGO_HOST = '127.0.0.1'
+# MONGO_NAME = 'RbR'
+# MONGO_DATABASE_HOST = 'mongodb://%s:%s@%s/%s'% (MONGO_USER, MONGO_PASS, MONGO_HOST, MONGO_NAME)
+# connect(MONGO_NAME, host=MONGO_DATABASE_HOST, port=27017)
+
+
+MONGODB_DATABASES = {
+    "default": {
+        "name": 'RbR',
+        "host": '127.0.0.1:27017',
+        "password": 'herman',
+        "username": 'mohammad',
+        "tz_aware": True,  # if you using timezones in django (USE_TZ = True)
+    },
+}
+
+
+
+SESSION_ENGINE = 'django_mongoengine.sessions'
+SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
