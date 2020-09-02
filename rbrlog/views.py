@@ -4,8 +4,14 @@ from .models import User
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return render(request, template_name='rbrlog/loginout.html')
 
 
 
+def login_user(request):
 
+
+    print(request.POST)
+
+
+    return HttpResponse("Hi every one")
