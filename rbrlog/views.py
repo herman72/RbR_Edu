@@ -8,10 +8,8 @@ def index(request):
 
 
 
-def login_user(request):
-
+def login(request):
 
     print(request.POST)
-
 
     return HttpResponse("Hi every one")
