@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from mongoengine import NotUniqueError, DoesNotExist
-from rbrlog.mongo_models import User
+from rbrlog.mongo_models import User, DeviceInfo
 from django.contrib.auth.hashers import make_password, check_password
+from datetime import datetime, timedelta
 
 from ipware import get_client_ip
 
@@ -17,19 +18,45 @@ def index(request):
 
 def login(request):
     # print(request.POST)
+    ip, is_routable = get_client_ip(request)
     data = request.POST
+
     try:
-        q = User.objects.get(name=data["user_name"])
-    except DoesNotExist:
-        return HttpResponse("User Does Not Exist")
-    # print(q.to_json())
-    if check_password(data["psw"], q["hashed_password"]):
-        request.session["Login"] = True
-        request.session["User_name"] = data["user_name"]
-        # print(request.session.get("Login"))
-        return HttpResponse("You are Login successfully")
+        uip = DeviceInfo.objects.get(ip=ip)
+    except:
+        uip = DeviceInfo.objects.create(ip=ip)
+
+    if uip.numtry > 3:
+        print(datetime.now() - uip.login_time > timedelta(minutes=1))
+        print(uip)
+        if datetime.now() - uip.login_time > timedelta(minutes=1):
+            uip.numtry = 0
+            uip.save()
+
+
+        return HttpResponse("1 min banned")
     else:
-        return HttpResponse("Wrong PSW")
+
+        try:
+            q = User.objects.get(name=data["user_name"])
+        except DoesNotExist:
+            uip.numtry += 1
+            uip.login_time = datetime.now()
+            uip.save()
+            return HttpResponse("User Does Not Exist")
+        # print(q.to_json())
+        if check_password(data["psw"], q["hashed_password"]):
+            request.session["Login"] = True
+            request.session["User_name"] = data["user_name"]
+            # print(request.session.get("Login"))
+            uip.numtry = 0
+            uip.save()
+            return HttpResponse("You are Login successfully")
+        else:
+            uip.numtry += 1
+            uip.login_time = datetime.now()
+            uip.save()
+            return HttpResponse("Wrong PSW")
 
 
 def register(request):
@@ -50,9 +77,3 @@ def logout(request):
     del request.session["Login"]
     del request.session["User_name"]
     return render(request, template_name='rbrlog/loginout.html')
-
-
-def ban(request):
-    ip, is_routable = get_client_ip(request)
-
-
