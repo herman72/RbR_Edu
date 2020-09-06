@@ -6,4 +6,6 @@ app_name = 'rbrlog'
 urlpatterns = [
         path('', views.index, name='index'),
         path('login', views.login, name='login'),
+        path('register', views.register, name='register'),
+        path('log_out', views.logout, name='log_out'),
 ]

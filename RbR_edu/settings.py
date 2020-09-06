@@ -38,9 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_mongoengine',
-    'rbrlog.apps.RbrlogConfig',
-    'django_mongoengine.mongo_admin',
+    'rbrlog',
 ]
 
 MIDDLEWARE = [
@@ -89,31 +87,27 @@ DATABASES = {
      }
 }
 
-
-AUTHENTICATION_BACKENDS = (
-               'django_mongoengine.mongo_auth.backends.MongoEngineBackend',
- )
 # AUTH_USER_MODEL = 'rbrlog.User'
-MONGOENGINE_USER_DOCUMENT = 'django_mongoengine.django.auth.User'
+# MONGOENGINE_USER_DOCUMENT = 'django_mongoengine.django.auth.User'
 
 
-# MONGO_USER = 'mohammad'
-# MONGO_PASS = 'herman'
-# MONGO_HOST = '127.0.0.1'
-# MONGO_NAME = 'RbR'
-# MONGO_DATABASE_HOST = 'mongodb://%s:%s@%s/%s'% (MONGO_USER, MONGO_PASS, MONGO_HOST, MONGO_NAME)
-# connect(MONGO_NAME, host=MONGO_DATABASE_HOST, port=27017)
+MONGO_USER = 'mohammad'
+MONGO_PASS = 'herman'
+MONGO_HOST = '127.0.0.1'
+MONGO_NAME = 'RbR'
+MONGO_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGO_USER, MONGO_PASS, MONGO_HOST, MONGO_NAME)
+connect(MONGO_NAME, host=MONGO_DATABASE_HOST, port=27017)
 
 
-MONGODB_DATABASES = {
-    "default": {
-        "name": 'RbR',
-        "host": '127.0.0.1:27017',
-        "password": 'herman',
-        "username": 'mohammad',
-        "tz_aware": True,  # if you using timezones in django (USE_TZ = True)
-    },
-}
+#MONGODB_DATABASES = {
+#    "default": {
+#        "name": 'RbR',
+#        "host": '127.0.0.1:27017',
+#        "password": 'herman',
+#        "username": 'mohammad',
+#        "tz_aware": True,  # if you using timezones in django (USE_TZ = True)
+#    },
+#}
 
 
 

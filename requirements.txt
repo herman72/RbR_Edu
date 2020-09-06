@@ -1,1 +1,2 @@
 Django==2.2.3
+mongoengine~=0.20.0
