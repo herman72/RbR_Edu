@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <h2>Search User</h2>
+        <div>
+            <form action='{% url 'rbrlog:search_form'%}' method="POST">
+                {% csrf_token %}
+                {{ form_class }}
+
+            </form>
+        </div>
+</head>
+<body>
+
+</body>
+</html>

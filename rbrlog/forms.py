@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from mongoengine import DoesNotExist
-
 from rbrlog.mongo_models import User
 
 
@@ -53,3 +52,10 @@ class RegisterForm(forms.Form):
             pass
 
         return cuser
+
+
+'''In this class we get search among Users'''
+
+class SearchForm(forms.Form):
+
+    query = forms.CharField(label="search user", max_length=255,required=True)

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import View
 from mongoengine import NotUniqueError, DoesNotExist
-from rbrlog.forms import LoginForm, RegisterForm
+from rbrlog.forms import LoginForm, RegisterForm, SearchForm
 from rbrlog.mongo_models import User, DeviceInfo
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime, timedelta
@@ -154,7 +154,7 @@ class Register(View):
         else:
             login_form = LoginForm()
             return render(request, template_name='rbrlog/loginout.html',
-                          context={'login_form': login_form, 'reglogoutister_form': register_form})
+                          context={'login_form': login_form, 'register_form': register_form})
 
 
 class Logout(View):
@@ -166,6 +166,30 @@ class Logout(View):
         register_form = RegisterForm()
         return render(request, template_name='rbrlog/loginout.html',
                       context={'login_form': login_form, 'register_form': register_form})
+
+
+class SearchUser(View):
+    form_class = SearchForm
+
+    def get(self, request):
+
+        # data = request.POST
+
+        search_form = self.form_class()
+
+        # user = User.objects.filter(name__contains=search_form.cleaned_data['query'])
+
+        return render(request, template_name='rbrlog/SearchForm.html',
+                          context={'form_class':search_form})
+
+    def post(self, request):
+        data = request.POST
+
+        user = User.objects.filter(name__contains=data['query'])
+
+        return render(request, template_name='rbrlog/Search Result.html',
+                      context={'query': data['query']})
+
 
 
 
