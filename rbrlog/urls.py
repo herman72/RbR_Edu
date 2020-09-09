@@ -4,8 +4,8 @@ from . import views
 app_name = 'rbrlog'
 
 urlpatterns = [
-        path('', views.index, name='index'),
-        path('login', views.login, name='login'),
-        path('register', views.register, name='register'),
-        path('log_out', views.logout, name='log_out'),
+        path('', views.Index.as_view(), name='index'),
+        path('login', views.Login.as_view(), name='login'),
+        path('register', views.Register.as_view(), name='register'),
+        path('log_out', views.Logout.as_view(), name='log_out'),
 ]

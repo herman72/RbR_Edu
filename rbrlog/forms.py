@@ -46,7 +46,6 @@ class RegisterForm(forms.Form):
         try:
             q = User.objects.get(name=cuser)
 
-            print("why why why ???")
 
             raise ValidationError('same user name in database')
 
