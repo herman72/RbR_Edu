@@ -9,6 +9,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from datetime import datetime, timedelta
 from ipware import get_client_ip
 
+
 # def index(request):
 #     if request.session.get("Login"):
 #
@@ -99,7 +100,7 @@ class Index(View):
 class Login(View):
     form_class = LoginForm
 
-    def post(self,request):
+    def post(self, request):
 
         ip, is_routable = get_client_ip(request)
         data = request.POST
@@ -146,7 +147,8 @@ class Register(View):
         register_form = self.form_class(data)
         if register_form.is_valid():
 
-            u = User.objects.create(name=register_form.cleaned_data["user_name"], email=register_form.cleaned_data["email"],
+            u = User.objects.create(name=register_form.cleaned_data["user_name"],
+                                    email=register_form.cleaned_data["email"],
                                     ip=ip,
                                     hashed_password=make_password(register_form.cleaned_data["password"]))
 
@@ -172,7 +174,6 @@ class SearchUser(View):
     form_class = SearchForm
 
     def get(self, request):
-
         # data = request.POST
 
         search_form = self.form_class()
@@ -180,7 +181,7 @@ class SearchUser(View):
         # user = User.objects.filter(name__contains=search_form.cleaned_data['query'])
 
         return render(request, template_name='rbrlog/SearchForm.html',
-                          context={'form_class':search_form})
+                      context={'form_class': search_form})
 
     def post(self, request):
         data = request.POST
@@ -189,7 +190,3 @@ class SearchUser(View):
 
         return render(request, template_name='rbrlog/Search Result.html',
                       context={'query': data['query']})
-
-
-
-
