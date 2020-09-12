@@ -6,7 +6,9 @@
         <div>
             <form action='{% url 'rbrlog:search_form'%}' method="POST">
                 {% csrf_token %}
-                {{ form_class }}
+                {{ search_form }}
+                <input type="submit" name="nameuser">
+
 
             </form>
         </div>

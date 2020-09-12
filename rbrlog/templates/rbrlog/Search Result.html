@@ -5,6 +5,12 @@
 
     <h2>Here is your search results for {{ query }}</h2>
 
+    <ul>
+        {% for k in user %}
+            <li>{{ k.name }}</li>
+        {% endfor %}
+    </ul>
+
     <div> </div>
 
 </head>

@@ -181,7 +181,7 @@ class SearchUser(View):
         # user = User.objects.filter(name__contains=search_form.cleaned_data['query'])
 
         return render(request, template_name='rbrlog/SearchForm.html',
-                      context={'form_class': search_form})
+                      context={'search_form': search_form})
 
     def post(self, request):
         data = request.POST
@@ -189,4 +189,4 @@ class SearchUser(View):
         user = User.objects.filter(name__contains=data['query'])
 
         return render(request, template_name='rbrlog/Search Result.html',
-                      context={'query': data['query']})
+                      context={'query': data['query'], 'user': user})
