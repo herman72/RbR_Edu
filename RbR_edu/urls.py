@@ -21,4 +21,5 @@ app_name = 'rbrlog'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('rbrlog/', include('rbrlog.urls')),
+    path('blog/', include('blog.urls'))
 ]
