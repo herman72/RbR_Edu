@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rbrlog',
+    'blog',
 ]
 
 MIDDLEWARE = [
@@ -75,44 +76,27 @@ WSGI_APPLICATION = 'RbR_edu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 DATABASES = {
-     'default': {
-          'ENGINE': 'django.db.backends.dummy'
-     }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
-
-# AUTH_USER_MODEL = 'rbrlog.User'
-# MONGOENGINE_USER_DOCUMENT = 'django_mongoengine.django.auth.User'
-
-
-MONGO_USER = 'mohammad'
-MONGO_PASS = 'herman'
-MONGO_HOST = '127.0.0.1'
-MONGO_NAME = 'RbR'
-MONGO_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGO_USER, MONGO_PASS, MONGO_HOST, MONGO_NAME)
-connect(MONGO_NAME, host=MONGO_DATABASE_HOST, port=27017)
+# DATABASES = {
+#      'default': {
+#           'ENGINE': 'django.db.backends.dummy'
+#      }
+# }
 
 
-#MONGODB_DATABASES = {
-#    "default": {
-#        "name": 'RbR',
-#        "host": '127.0.0.1:27017',
-#        "password": 'herman',
-#        "username": 'mohammad',
-#        "tz_aware": True,  # if you using timezones in django (USE_TZ = True)
-#    },
-#}
+# MONGO_USER = 'mohammad'
+# MONGO_PASS = 'herman'
+# MONGO_HOST = '127.0.0.1'
+# MONGO_NAME = 'RbR'
+# MONGO_DATABASE_HOST = 'mongodb://%s:%s@%s/%s' % (MONGO_USER, MONGO_PASS, MONGO_HOST, MONGO_NAME)
+# connect(MONGO_NAME, host=MONGO_DATABASE_HOST, port=27017)
 
 
-
-SESSION_ENGINE = 'django_mongoengine.sessions'
-SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -150,3 +134,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
