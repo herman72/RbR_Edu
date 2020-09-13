@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>RbR blog</title>
-    </head>
-    <body>
-        <div>
-            <h1><a href="/"> RbR blog test </a></h1>
-        </div>
+<head>
+    <title>RbR blog</title>
+</head>
+<body>
+<div>
+    <h1><a href="/">RbR Blog</a></h1>
+</div>
 
-        <div>
-            <h2><a href=""> this is first post</a></h2>
+{% for post in posts %}
+    <div>
 
-        </div>
+        <h2><a href="">{{ post.title }}</a></h2>
+        <p>published: {{ post.published_date }}</p>
+        <p>{{ post.text|linebreaksbr }}</p>
+    </div>
+{% endfor %}
 
 
 
-        <p>Hi there!</p>
-        <p>It works!</p>
-    </body>
+</body>
 </html>
