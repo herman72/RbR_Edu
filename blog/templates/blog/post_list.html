@@ -7,17 +7,21 @@
 <div>
     <h1><a href="/">RbR Blog</a></h1>
 </div>
+<h3>you are login as {{ user }}</h3>
 
 {% for post in posts %}
     <div>
 
         <h2><a href="">{{ post.title }}</a></h2>
         <p>published: {{ post.published_date }}</p>
+        <p>{{ post.author }}</p>
         <p>{{ post.text|linebreaksbr }}</p>
     </div>
 {% endfor %}
 
-
+<a href="logout">
+<button type="submit">logout</button>
+</a>
 
 </body>
 </html>

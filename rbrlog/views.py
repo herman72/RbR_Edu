@@ -190,3 +190,5 @@ class SearchUser(View):
 
         return render(request, template_name='rbrlog/Search Result.html',
                       context={'query': data['query'], 'user': user})
+
+
