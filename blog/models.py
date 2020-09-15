@@ -20,4 +20,16 @@ class Post(models.Model):
         return self.title
 
 
+class Comment(models.Model):
+
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_time = models.DateTimeField(default=timezone.now)
+
+    post = models.ForeignKey('blog.POST', on_delete=models.CASCADE, related_name='comments')
+
+    def __str__(self):
+        return self.text
+
+
 
