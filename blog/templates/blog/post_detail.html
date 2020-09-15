@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <h1>{{ post.title }}</h1>
+    {{ post.text }}
+
+    <hr>
+{% for comment in post.comments.all %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}</div>
+        <strong>{{ comment.author_comment }}</strong>
+
+        <p>{{ comment.text|linebreaks }}</p>
+
+    </div>
+{% empty %}
+    <p>No comments here yet :(</p>
+{% endfor %}
+<a class="btn btn-default" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+</head>
+<body>
+
+</body>
+</html>

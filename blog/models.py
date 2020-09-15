@@ -4,13 +4,11 @@ from django.utils import timezone
 
 
 class Post(models.Model):
-
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     text = models.TextField()
     created_time = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
-
 
     def publish(self):
         self.published_date = timezone.now()
@@ -21,8 +19,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author_comment = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
     created_time = models.DateTimeField(default=timezone.now)
 
@@ -30,6 +27,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text
-
-
-
