@@ -27,30 +27,46 @@
         $(document).ready(function () {
 
             $(".follow-button").click(function () {
-                if ($(this).text() == "+ Follow") {
-                    console.log('Hello');
-                    // *** State Change: To Following ***
-                    // We want the button to squish (or shrink) by 10px as a reaction to the click and for it to last 100ms
 
-                    $(this).text("Following");
+
+                if ($(this).text() == "+ Follow") {
+
+                    $.ajax({
+                        url: '/ajax/validate_username/',
+                        data: {
+                            'username': username
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.is_taken) {
+                                alert("A user with this username already exists.");
+                            }
+                        }
+                        console.log('Hello');
+                        // *** State Change: To Following ***
+                        // We want the button to squish (or shrink) by 10px as a reaction to the click and for it to last 100ms
+
+                        $(this).text("Following");
 
                     // Animate the background transition from white to green. Using JQuery Color
 
 
-                } else {
-                    console.log('this is else');
+                } else
+                    {
+                        console.log('this is else');
 
-                    // *** State Change: Unfollow ***
-                    // Change the button back to it's original state
+                        // *** State Change: Unfollow ***
+                        // Change the button back to it's original state
 
-                    $(this).text("+ Follow");
-                    $(this).css("color", "#3399FF");
-                    $(this).css("background-color", "#ffffff");
-                    $(this).css("border-color", "#3399FF");
+                        $(this).text("+ Follow");
+                        $(this).css("color", "#3399FF");
+                        $(this).css("background-color", "#ffffff");
+                        $(this).css("border-color", "#3399FF");
 
 
+                    }
                 }
-            })
+            )
             ;
         })
         ;

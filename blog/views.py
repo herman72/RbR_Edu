@@ -90,3 +90,8 @@ def add_follower(request):
 
 
     return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser':request.user})
+
+
+def request_follower(request):
+    request.user.
+    redirect()
