@@ -1,7 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+from django.conf import settings
+
+
 
 class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -29,10 +32,5 @@ class Comment(models.Model):
         return self.text
 
 
-class UserFollow(User):
-
-    followers = models.ManyToManyField('UserFollow', related_name='followed_by')
-
-
-
-
+class UserBlog(AbstractUser):
+    followers = models.ManyToManyField('UserBlog', related_name='followed_by')

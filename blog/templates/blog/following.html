@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+
+    <style>
+        .follow-button {
+            color: #3399FF;
+            font-family: "Helvetica";
+            font-size: 10pt;
+            background-color: #ffffff;
+            border: 1px solid;
+            border-color: #3399FF;
+            border-radius: 3px;
+            width: 85px;
+            height: 30px;
+            cursor: hand;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        $.curCSS = function (element, prop, val) {
+            return $(element).css(prop, val);
+        };
+        $(document).ready(function () {
+
+            $(".follow-button").click(function () {
+                if ($(this).text() == "+ Follow") {
+                    console.log('Hello');
+                    // *** State Change: To Following ***
+                    // We want the button to squish (or shrink) by 10px as a reaction to the click and for it to last 100ms
+
+                    $(this).text("Following");
+
+                    // Animate the background transition from white to green. Using JQuery Color
+
+
+                } else {
+                    console.log('this is else');
+
+                    // *** State Change: Unfollow ***
+                    // Change the button back to it's original state
+
+                    $(this).text("+ Follow");
+                    $(this).css("color", "#3399FF");
+                    $(this).css("background-color", "#ffffff");
+                    $(this).css("border-color", "#3399FF");
+
+
+                }
+            })
+            ;
+        })
+        ;
+    </script>
+
+
+</head>
+<body>
+<h1>you are login as {{ loginuser }}</h1>
+{% for user in users %}
+    <h2>{{ user }}</h2>
+    <button class="follow-button">+ Follow</button>
+{% endfor %}
+</body>
+</html>

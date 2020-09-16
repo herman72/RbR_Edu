@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from blog.forms import PostForm, CommentForm
-from blog.models import Post
+from blog.models import Post, UserBlog
 from django.contrib.auth import logout, login, authenticate
 
 
@@ -17,7 +17,9 @@ def signup_view(request):
         form_sign = UserCreationForm(request.POST)
 
         if form_sign.is_valid():
-            form_sign.save()
+            user = form_sign.save()
+            logout(request)
+            login(request, user)
             posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
 
             return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
@@ -81,3 +83,10 @@ def add_comment_to_post(request, pk):
     else:
         form = CommentForm()
     return render(request, 'blog/add_comment_to_post.html', {'form': form})
+
+
+def add_follower(request):
+
+
+
+    return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser':request.user})
