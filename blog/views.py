@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -86,12 +87,15 @@ def add_comment_to_post(request, pk):
 
 
 def add_follower(request):
-
-
-
-    return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser':request.user})
+    return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser': request.user})
 
 
 def request_follower(request):
-    request.user.
-    redirect()
+    print(request.user.username)
+    print(request.user)
+    id_one = UserBlog.objects.get(username=request.user.username)
+    id_two = UserBlog.objects.get(username=request.POST['username'])
+
+    id_one.followers.add(id_two)
+
+    return HttpResponse(status=200)

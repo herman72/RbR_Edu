@@ -29,30 +29,30 @@
             $(".follow-button").click(function () {
 
 
-                if ($(this).text() == "+ Follow") {
+                    if ($(this).text() == "+ Follow") {
+                            console.log($(this).parent().find("input")[0].value);
+                        $.ajax({
+                            url: '/blog/request_follower',
+                            headers: { "X-CSRFToken": $(this).parent().find('[name=csrfmiddlewaretoken]')[0].value },
+                            type: "POST",
+                            data: {
+                                'username': $(this).parent().find("h2").text()
+                            },
+                            dataType: 'json',
+                            success: function (data) {
 
-                    $.ajax({
-                        url: '/ajax/validate_username/',
-                        data: {
-                            'username': username
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            if (data.is_taken) {
-                                alert("A user with this username already exists.");
                             }
-                        }
+                        });
                         console.log('Hello');
                         // *** State Change: To Following ***
                         // We want the button to squish (or shrink) by 10px as a reaction to the click and for it to last 100ms
 
                         $(this).text("Following");
 
-                    // Animate the background transition from white to green. Using JQuery Color
+                        // Animate the background transition from white to green. Using JQuery Color
 
 
-                } else
-                    {
+                    } else {
                         console.log('this is else');
 
                         // *** State Change: Unfollow ***
@@ -77,8 +77,11 @@
 <body>
 <h1>you are login as {{ loginuser }}</h1>
 {% for user in users %}
-    <h2>{{ user }}</h2>
-    <button class="follow-button">+ Follow</button>
+    <div>
+        {% csrf_token %}
+        <h2>{{ user }}</h2>
+        <button class="follow-button">+ Follow</button>
+    </div>
 {% endfor %}
 </body>
 </html>
