@@ -30,7 +30,7 @@
 
 
                     if ($(this).text() == "+ Follow") {
-                        console.log($(this).parent().find("input")[0].value);
+
                         $.ajax({
                             url: '/blog/request_follower',
                             headers: {"X-CSRFToken": $(this).parent().find('[name=csrfmiddlewaretoken]')[0].value},
@@ -95,8 +95,19 @@
     <div>
         {% csrf_token %}
         {% if  user != loginuser %}
-            <h2>{{ user }}</h2>
-            <button class="follow-button">+ Follow</button>
+            {% if user in followers %}
+                <h2>{{ user }}</h2>
+                <button class="follow-button">Following</button>
+            {% else %}
+                <h2>{{ user }}</h2>
+                <button class="follow-button">+ Follow</button>
+            {% endif %}
+
+
+
+
+
+
         {% endif %}
 
     </div>

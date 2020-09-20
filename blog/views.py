@@ -12,7 +12,7 @@ from django.db.models import Q
 def post_list(request):
     login_user = UserBlog.objects.get(username=request.user.username)
 
-    posts = Post.objects.filter( Q(author__in=login_user.followers.all()) | Q(author=request.user))
+    posts = Post.objects.filter(Q(author__in=login_user.followers.all()) | Q(author=request.user))
     return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
 
 
@@ -93,8 +93,9 @@ def add_comment_to_post(request, pk):
 
 
 def add_follower(request):
-
-    return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser': request.user})
+    login_user = UserBlog.objects.get(username=request.user.username)
+    return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser': request.user,
+                                                           'followers': login_user.followers.all()})
 
 
 def request_follower(request):
