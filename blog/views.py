@@ -93,6 +93,44 @@ class NewPost(View):
         return render(request, 'blog/post_edit.html', {'form': new_form})
 
 
+class AddComment(View):
+    form = CommentForm
+
+    def get(self, request,pk):
+        blank_comment_form = self.form()
+        return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        fill_comment = self.form(request.POST)
+
+        if fill_comment.is_valid():
+            comment = fill_comment.save(commit=False)
+            comment.post = post
+            comment.author_comment = request.user
+            comment.save()
+            return redirect('blog:post_detail', pk=post.pk)
+
+        else:
+            blank_comment_form = self.form()
+            return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
+
+
+# def add_comment_to_post(request, pk):
+#     post = get_object_or_404(Post, pk=pk)
+#     if request.method == "POST":
+#         form = CommentForm(request.POST)
+#         if form.is_valid():
+#             comment = form.save(commit=False)
+#             comment.post = post
+#             comment.author_comment = request.user
+#             comment.save()
+#             return redirect('post_detail', pk=post.pk)
+#     else:
+#         form = CommentForm()
+#         return render(request, 'blog/add_comment_to_post.html', {'form': form})
+
+
 # def post_list(request):
 #     login_user = UserBlog.objects.get(username=request.user.username)
 #
@@ -159,21 +197,6 @@ def logout_view(request):
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     return render(request, 'blog/post_detail.html', context={'post': post})
-
-
-def add_comment_to_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.author_comment = request.user
-            comment.save()
-            return redirect('post_detail', pk=post.pk)
-    else:
-        form = CommentForm()
-    return render(request, 'blog/add_comment_to_post.html', {'form': form})
 
 
 def add_follower(request):

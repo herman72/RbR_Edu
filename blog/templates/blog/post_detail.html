@@ -16,7 +16,7 @@
 {% empty %}
     <p>No comments here yet :(</p>
 {% endfor %}
-<a class="btn btn-default" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+<a class="btn btn-default" href="{% url 'blog:add_comment_to_post' pk=post.pk %}">Add comment</a>
 </head>
 <body>
 
