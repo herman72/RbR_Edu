@@ -1,14 +1,18 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from blog.forms import PostForm, CommentForm
 from blog.models import Post, UserBlog
 from django.contrib.auth import logout, login, authenticate
+from django.db.models import Q
 
 
 def post_list(request):
-    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+    login_user = UserBlog.objects.get(username=request.user.username)
+
+    posts = Post.objects.filter( Q(author__in=login_user.followers.all()) | Q(author=request.user))
     return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
 
 
@@ -21,9 +25,10 @@ def signup_view(request):
             user = form_sign.save()
             logout(request)
             login(request, user)
-            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+            # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
 
-            return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
+            return redirect(reverse('post_list'))
+            # return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
     else:
         form_sign = UserCreationForm()
     return render(request, template_name='blog/signup.html',
@@ -37,8 +42,9 @@ def login_view(request):
         if form_login.is_valid():
             user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
             login(request, user)
-            posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-            return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
+            # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+            return redirect(reverse('post_list'))
+            # return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
 
     else:
         form_login = AuthenticationForm()
@@ -87,6 +93,7 @@ def add_comment_to_post(request, pk):
 
 
 def add_follower(request):
+
     return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser': request.user})
 
 
@@ -103,7 +110,7 @@ def request_follower(request):
 
 def request_unfollow(request):
     id_one = UserBlog.objects.get(username=request.user.username)
-    id_two = UserBlog.objects.get(username=request.user.POST['username'])
+    id_two = UserBlog.objects.get(username=request.POST['username'])
     id_one.followers.remove(id_two)
 
     return HttpResponse(status=200)

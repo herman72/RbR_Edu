@@ -11,4 +11,5 @@ urlpatterns = [
     path('post/<int:pk>/comment/', views.add_comment_to_post, name='add_comment_to_post'),
     path('following', views.add_follower, name='following'),
     path('request_follower', views.request_follower, name='request_follower'),
+    path('request_unfollow', views.request_unfollow, name='request_unfollow'),
 ]

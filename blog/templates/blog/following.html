@@ -55,7 +55,7 @@
                     } else {
 
                         $.ajax({
-                            url: '/blog/request_follower',
+                            url: '/blog/request_unfollow',
                             headers: {"X-CSRFToken": $(this).parent().find('[name=csrfmiddlewaretoken]')[0].value},
                             type: "POST",
                             data: {
@@ -94,8 +94,11 @@
 {% for user in users %}
     <div>
         {% csrf_token %}
-        <h2>{{ user }}</h2>
-        <button class="follow-button">+ Follow</button>
+        {% if  user != loginuser %}
+            <h2>{{ user }}</h2>
+            <button class="follow-button">+ Follow</button>
+        {% endif %}
+
     </div>
 {% endfor %}
 </body>
