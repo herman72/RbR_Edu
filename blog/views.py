@@ -99,3 +99,11 @@ def request_follower(request):
     id_one.followers.add(id_two)
 
     return HttpResponse(status=200)
+
+
+def request_unfollow(request):
+    id_one = UserBlog.objects.get(username=request.user.username)
+    id_two = UserBlog.objects.get(username=request.user.POST['username'])
+    id_one.followers.remove(id_two)
+
+    return HttpResponse(status=200)

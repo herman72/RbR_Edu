@@ -30,10 +30,10 @@
 
 
                     if ($(this).text() == "+ Follow") {
-                            console.log($(this).parent().find("input")[0].value);
+                        console.log($(this).parent().find("input")[0].value);
                         $.ajax({
                             url: '/blog/request_follower',
-                            headers: { "X-CSRFToken": $(this).parent().find('[name=csrfmiddlewaretoken]')[0].value },
+                            headers: {"X-CSRFToken": $(this).parent().find('[name=csrfmiddlewaretoken]')[0].value},
                             type: "POST",
                             data: {
                                 'username': $(this).parent().find("h2").text()
@@ -53,6 +53,21 @@
 
 
                     } else {
+
+                        $.ajax({
+                            url: '/blog/request_follower',
+                            headers: {"X-CSRFToken": $(this).parent().find('[name=csrfmiddlewaretoken]')[0].value},
+                            type: "POST",
+                            data: {
+                                'username': $(this).parent().find("h2").text()
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+
+                            }
+                        });
+
+
                         console.log('this is else');
 
                         // *** State Change: Unfollow ***
