@@ -3,7 +3,7 @@
 <head>
     <h2>Login Form</h2>
 
-    <form action='{% url 'login' %}' method="POST">
+    <form action='{% url 'blog:login' %}' method="POST">
         {% csrf_token %}
             <div>
                 {{ form_login }}
