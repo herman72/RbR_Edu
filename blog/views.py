@@ -173,10 +173,11 @@ class ForgetPassForm(View):
 
     def post(self, request):
         filled_form = self.form(request.POST)
+        if filled_form.is_valid():
+            return render(request, 'blog/password_reset_done.html', context={'email': request.POST['email']})
+        else:
 
-
-
-        return render(request, 'blog/password_reset_done.html')
+            return render(request, 'blog/password_reset_form.html', context={'form': filled_form})
 
 # def logout_view(request):
 #     logout(request)

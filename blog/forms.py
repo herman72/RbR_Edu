@@ -1,5 +1,6 @@
 from django import forms
 from blog.models import Post, Comment, UserBlog
+from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -16,8 +17,15 @@ class CommentForm(forms.ModelForm):
 
 
 class PasswordResetForm(forms.Form):
-    user_name = forms.CharField(max_length=255, required=True)
     email = forms.EmailField(required=True)
+
+    def clean_email(self):
+        euser = self.cleaned_data['email']
+        try:
+            q = UserBlog.objects.get(email=euser)
+            return euser
+        except:
+            raise ValidationError("There is no email in database!")
 
 
 class UserCreationForm(UserCreationForm):
