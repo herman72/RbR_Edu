@@ -18,7 +18,7 @@ class PostList(View):
     def get(self, request):
         try:
             login_user = UserBlog.objects.get(username=request.user.username)
-            posts = Post.objects.filter(Q(author__in=login_user.followers.all()) | Q(author=request.user))
+            posts = Post.objects.filter(Q(author__in=login_user.following.all()) | Q(author=request.user))
             return render(request, template_name='blog/post_list.html', context={'posts': posts, 'user': request.user})
         except:
             return HttpResponse("pls sign in")
@@ -96,7 +96,7 @@ class NewPost(View):
 class AddComment(View):
     form = CommentForm
 
-    def get(self, request,pk):
+    def get(self, request, pk):
         blank_comment_form = self.form()
         return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
 
@@ -114,6 +114,84 @@ class AddComment(View):
         else:
             blank_comment_form = self.form()
             return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
+
+
+class PostDetails(View):
+
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        return render(request, 'blog/post_detail.html', context={'post': post})
+
+
+class FollowerList(View):
+
+    def get(self, request):
+        login_user = UserBlog.objects.get(username=request.user.username)
+        return render(request, 'blog/FollowList.html',
+                      context={'users': UserBlog.objects.all(), 'loginuser': request.user,
+                               'followers': login_user.following.all()})
+
+
+class RequestFollow(View):
+
+    def post(self, request):
+        user = UserBlog.objects.get(username=request.user.username)
+        user_want_follow = UserBlog.objects.get(username=request.POST['username'])
+
+        user.following.add(user_want_follow)
+
+        return HttpResponse(status=200)
+
+
+class RequestUnfollow(View):
+
+    def post(self, request):
+        user = UserBlog.objects.get(username=request.user.username)
+        user_want_follow = UserBlog.objects.get(username=request.POST['username'])
+        user.following.remove(user_want_follow)
+
+        return HttpResponse(status=200)
+
+
+class Logout(View):
+
+    def get(self, request):
+        logout(request)
+
+        return redirect(reverse('blog:login'))
+
+# def logout_view(request):
+#     logout(request)
+#
+#     return redirect(reverse('blog:login'))
+
+
+# def request_follower(request):
+#     id_one = UserBlog.objects.get(username=request.user.username)
+#     id_two = UserBlog.objects.get(username=request.POST['username'])
+#
+#     id_one.followers.add(id_two)
+#
+#     return HttpResponse(status=200)
+#
+
+# def request_unfollow(request):
+#     id_one = UserBlog.objects.get(username=request.user.username)
+#     id_two = UserBlog.objects.get(username=request.POST['username'])
+#     id_one.followers.remove(id_two)
+#
+#     return HttpResponse(status=200)
+
+
+# def add_follower(request):
+#     login_user = UserBlog.objects.get(username=request.user.username)
+#     return render(request, 'blog/FollowList.html', context={'users': UserBlog.objects.all(), 'loginuser': request.user,
+#                                                            'followers': login_user.followers.all()})
+
+
+# def post_detail(request, pk):
+#     post = get_object_or_404(Post, pk=pk)
+#     return render(request, 'blog/post_detail.html', context={'post': post})
 
 
 # def add_comment_to_post(request, pk):
@@ -186,39 +264,3 @@ class AddComment(View):
 #     else:
 #         form = PostForm()
 #     return render(request, 'blog/post_edit.html', {'form': form})
-
-
-def logout_view(request):
-    logout(request)
-
-    return redirect(reverse('blog:login'))
-
-
-def post_detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', context={'post': post})
-
-
-def add_follower(request):
-    login_user = UserBlog.objects.get(username=request.user.username)
-    return render(request, 'blog/following.html', context={'users': UserBlog.objects.all(), 'loginuser': request.user,
-                                                           'followers': login_user.followers.all()})
-
-
-def request_follower(request):
-    print(request.user.username)
-    print(request.user)
-    id_one = UserBlog.objects.get(username=request.user.username)
-    id_two = UserBlog.objects.get(username=request.POST['username'])
-
-    id_one.followers.add(id_two)
-
-    return HttpResponse(status=200)
-
-
-def request_unfollow(request):
-    id_one = UserBlog.objects.get(username=request.user.username)
-    id_two = UserBlog.objects.get(username=request.POST['username'])
-    id_one.followers.remove(id_two)
-
-    return HttpResponse(status=200)
