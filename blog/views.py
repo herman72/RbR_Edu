@@ -5,12 +5,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.http import HttpResponse
 from blog.models import Post, UserBlog
+from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
-from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetForm
+from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetForm, ChangePassForm
 
 """Class Based view"""
 
@@ -174,10 +175,35 @@ class ForgetPassForm(View):
     def post(self, request):
         filled_form = self.form(request.POST)
         if filled_form.is_valid():
+            unique_id = get_random_string(length=32)
             return render(request, 'blog/password_reset_done.html', context={'email': request.POST['email']})
         else:
 
             return render(request, 'blog/password_reset_form.html', context={'form': filled_form})
+
+
+class ChangePass(View):
+    form = ChangePassForm
+    def get(self, request):
+        blank_form = self.form()
+
+
+
+        return
+
+    def post(self, request):
+
+        filled_form = self.form(request.POST)
+
+        if filled_form.is_valid():
+
+            UserBlog.objects.filter(unique_id=)
+
+
+
+
+
+
 
 # def logout_view(request):
 #     logout(request)

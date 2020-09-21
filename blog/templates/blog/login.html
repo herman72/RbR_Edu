@@ -5,12 +5,16 @@
 
     <form action='{% url 'blog:login' %}' method="POST">
         {% csrf_token %}
-            <div>
-                {{ form_login }}
-                <button type="submit">Login</button>
-            </div>
+        <div>
+            {{ form_login }}
+            <button type="submit">Login</button>
+
+        </div>
 
     </form>
+    <a href="{% url 'blog:reset_pass_form' %}">
+        <button>Forget Password</button>
+    </a>
 </head>
 <body>
 

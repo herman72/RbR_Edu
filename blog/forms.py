@@ -41,3 +41,14 @@ class UserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ChangePassForm(forms.Form):
+    password1 = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
+    password2 = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
+
+    def clean_pass(self):
+
+        if not self.password1 == self.password2:
+
+            raise ValidationError("no same pass")
