@@ -5,23 +5,22 @@ from django.urls import reverse
 from django.utils import timezone
 from django.http import HttpResponse
 from blog.models import Post, UserBlog
-from blog.forms import PostForm, CommentForm
+from django.utils.decorators import method_decorator
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetForm
 
 """Class Based view"""
 
 
 class PostList(View):
-
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def get(self, request):
-        try:
-            login_user = UserBlog.objects.get(username=request.user.username)
-            posts = Post.objects.filter(Q(author__in=login_user.following.all()) | Q(author=request.user))
-            return render(request, template_name='blog/post_list.html', context={'posts': posts, 'user': request.user})
-        except:
-            return HttpResponse("pls sign in")
+        login_user = UserBlog.objects.get(username=request.user.username)
+        posts = Post.objects.filter(Q(author__in=login_user.following.all()) | Q(author=request.user))
+        return render(request, template_name='blog/post_list.html', context={'posts': posts, 'user': request.user})
 
 
 class Register(View):
@@ -75,11 +74,13 @@ class Login(View):
 class NewPost(View):
     form = PostForm
 
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def get(self, request):
 
         new_form = self.form()
         return render(request, 'blog/post_edit.html', {'form': new_form})
 
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def post(self, request):
         new_form = self.form(request.POST)
         if new_form.is_valid():
@@ -96,10 +97,12 @@ class NewPost(View):
 class AddComment(View):
     form = CommentForm
 
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def get(self, request, pk):
         blank_comment_form = self.form()
         return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
 
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         fill_comment = self.form(request.POST)
@@ -117,14 +120,14 @@ class AddComment(View):
 
 
 class PostDetails(View):
-
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def get(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         return render(request, 'blog/post_detail.html', context={'post': post})
 
 
 class FollowerList(View):
-
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def get(self, request):
         login_user = UserBlog.objects.get(username=request.user.username)
         return render(request, 'blog/FollowList.html',
@@ -133,7 +136,7 @@ class FollowerList(View):
 
 
 class RequestFollow(View):
-
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def post(self, request):
         user = UserBlog.objects.get(username=request.user.username)
         user_want_follow = UserBlog.objects.get(username=request.POST['username'])
@@ -144,7 +147,7 @@ class RequestFollow(View):
 
 
 class RequestUnfollow(View):
-
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def post(self, request):
         user = UserBlog.objects.get(username=request.user.username)
         user_want_follow = UserBlog.objects.get(username=request.POST['username'])
@@ -154,11 +157,26 @@ class RequestUnfollow(View):
 
 
 class Logout(View):
-
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
     def get(self, request):
         logout(request)
 
         return redirect(reverse('blog:login'))
+
+
+class ForgetPassForm(View):
+    form = PasswordResetForm
+
+    def get(self, request):
+        blank_form = self.form()
+        return render(request, 'blog/password_reset_form.html', context={'form': blank_form})
+
+    def post(self, request):
+        filled_form = self.form(request.POST)
+
+
+
+        return render(request, 'blog/password_reset_done.html')
 
 # def logout_view(request):
 #     logout(request)

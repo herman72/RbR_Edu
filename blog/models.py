@@ -1,8 +1,8 @@
+"""import packages"""
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User, AbstractUser
-from django.conf import settings
+from django.contrib.auth.models import  AbstractUser
 
 
 class Post(models.Model):

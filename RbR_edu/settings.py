@@ -44,6 +44,9 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'blog.UserBlog'
 
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = str(BASE_DIR.join('sent_emails'))
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

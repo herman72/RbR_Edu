@@ -1,5 +1,5 @@
-from django.urls import path
 from blog import views
+from django.urls import path
 
 app_name = 'blog'
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('request_follow', views.RequestFollow.as_view(), name='request_follow'),
     path('request_unfollow', views.RequestUnfollow.as_view(), name='request_unfollow'),
     path('post/<int:pk>/comment/', views.AddComment.as_view(), name='add_comment_to_post'),
+    path('reset_pass', views.ForgetPassForm.as_view(), name='reset_pass_form')
 ]
