@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import HiddenInput
+
 from blog.models import Post, Comment, UserBlog
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
@@ -22,7 +24,7 @@ class PasswordResetForm(forms.Form):
     def clean_email(self):
         euser = self.cleaned_data['email']
         try:
-            q = UserBlog.objects.get(email=euser)
+            UserBlog.objects.get(email=euser)
             return euser
         except:
             raise ValidationError("There is no email in database!")
@@ -44,11 +46,15 @@ class UserCreationForm(UserCreationForm):
 
 
 class ChangePassForm(forms.Form):
-    password1 = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
-    password2 = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
+    password11 = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
+    password22 = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
 
-    def clean_pass(self):
+    email = forms.EmailField(max_length=255, widget=forms.HiddenInput())
+    code = forms.CharField(max_length=32, widget=forms.HiddenInput())
 
-        if not self.password1 == self.password2:
+    def clean(self):
+        print(self.cleaned_data['password11'])
+        if self.cleaned_data['password11'] != self.cleaned_data['password22']:
+            print('i am here')
 
             raise ValidationError("no same pass")

@@ -1,4 +1,7 @@
 """import packages"""
+import urllib
+
+from django.core.exceptions import ValidationError
 from django.views import View
 from django.db.models import Q
 from django.urls import reverse
@@ -12,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetForm, ChangePassForm
+from django.core.mail import send_mail
+from django.conf import settings
 
 """Class Based view"""
 
@@ -25,24 +30,25 @@ class PostList(View):
 
 
 class Register(View):
-    sinup_form = UserCreationForm
+    signup_form = UserCreationForm
 
     def get(self, request):
-        form_sign = self.sinup_form()
+        form_sign = self.signup_form()
         return render(request, template_name='blog/signup.html',
                       context={'form_sign': form_sign})
 
     def post(self, request):
-        form_sign = self.sinup_form(request.POST)
+        form_sign = self.signup_form(request.POST)
         if form_sign.is_valid():
             user = form_sign.save()
             logout(request)
             login(request, user)
+
             # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
 
             return redirect(reverse('blog:post_list'))
         else:
-            form_sign = self.sinup_form()
+            form_sign = self.signup_form()
             return render(request, template_name='blog/signup.html',
                           context={'form_sign': form_sign})
 
@@ -175,7 +181,17 @@ class ForgetPassForm(View):
     def post(self, request):
         filled_form = self.form(request.POST)
         if filled_form.is_valid():
+
             unique_id = get_random_string(length=32)
+            user = UserBlog.objects.get(email=request.POST['email'])
+
+            user.forget_password_code = unique_id
+            user.save()
+
+            file = open("link.txt", "w")
+            file.write(request.build_absolute_uri(reverse('blog:change_pass')) + '?' + urllib.parse.urlencode(
+                {'email': request.POST['email'], 'code': unique_id}))
+            file.close()
             return render(request, 'blog/password_reset_done.html', context={'email': request.POST['email']})
         else:
 
@@ -184,26 +200,27 @@ class ForgetPassForm(View):
 
 class ChangePass(View):
     form = ChangePassForm
+
     def get(self, request):
-        blank_form = self.form()
+        try:
+            print(UserBlog.objects.get(Q(email=request.GET['email'])))
+            UserBlog.objects.get(Q(forget_password_code=(request.GET['code'])) & Q(email=request.GET['email']))
+            blank_form = self.form(request.GET)
 
-
-
-        return
+            return render(request, 'blog/change_pass.html', context={'form': blank_form})
+        except:
+            return HttpResponse(status=400, content='bad request')
 
     def post(self, request):
-
         filled_form = self.form(request.POST)
 
         if filled_form.is_valid():
+            user = UserBlog.objects.get(Q(forget_password_code=request.POST['code']) & Q(email=request.POST['email']))
 
-            UserBlog.objects.filter(unique_id=)
+            user.password = request.POST['password11']
+            user.save()
 
-
-
-
-
-
+            return redirect(reverse('blog:login'))
 
 # def logout_view(request):
 #     logout(request)

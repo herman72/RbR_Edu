@@ -32,4 +32,5 @@ class Comment(models.Model):
 
 
 class UserBlog(AbstractUser):
+    forget_password_code = models.CharField(max_length=32, null=True, blank= True)
     following = models.ManyToManyField('UserBlog', related_name='followers')

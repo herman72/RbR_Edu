@@ -6,7 +6,6 @@ from rbrlog.mongo_models import User
 
 
 class LoginForm(forms.Form):
-
     password = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
     user_name = forms.CharField(max_length=255, required=True)
 
@@ -28,13 +27,13 @@ class LoginForm(forms.Form):
             cuser = self.cleaned_data['user_name']
             q = User.objects.get(name=cuser)
 
-            if not check_password(self.cleaned_data['password'],q["hashed_password"]):
+            if not check_password(self.cleaned_data['password'], q["hashed_password"]):
                 raise ValidationError('Wrong Pass')
 
             return self.cleaned_data
 
-class RegisterForm(forms.Form):
 
+class RegisterForm(forms.Form):
     password = forms.CharField(max_length=255, required=True, widget=forms.PasswordInput)
     user_name = forms.CharField(max_length=255, required=True)
     email = forms.EmailField(required=True, widget=forms.EmailInput)
@@ -44,7 +43,6 @@ class RegisterForm(forms.Form):
 
         try:
             q = User.objects.get(name=cuser)
-
 
             raise ValidationError('same user name in database')
 
@@ -56,6 +54,6 @@ class RegisterForm(forms.Form):
 
 '''In this class we get search among Users'''
 
-class SearchForm(forms.Form):
 
-    query = forms.CharField(label="search user", max_length=255,required=True)
+class SearchForm(forms.Form):
+    query = forms.CharField(label="search user", max_length=255, required=True)
