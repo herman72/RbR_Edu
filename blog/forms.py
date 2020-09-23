@@ -52,9 +52,13 @@ class ChangePassForm(forms.Form):
     email = forms.EmailField(max_length=255, widget=forms.HiddenInput())
     code = forms.CharField(max_length=32, widget=forms.HiddenInput())
 
-    def clean(self):
-        print(self.cleaned_data['password11'])
+    def clean_password22(self):
+
         if self.cleaned_data['password11'] != self.cleaned_data['password22']:
             print('i am here')
-
+            # self.add_error(field='password22', error=ValidationError("no same pass"))
             raise ValidationError("no same pass")
+        else:
+            return self.cleaned_data['password11']
+
+

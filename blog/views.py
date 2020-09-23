@@ -1,6 +1,7 @@
 """import packages"""
 import urllib
 
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.views import View
 from django.db.models import Q
@@ -202,6 +203,7 @@ class ChangePass(View):
     form = ChangePassForm
 
     def get(self, request):
+
         try:
             print(UserBlog.objects.get(Q(email=request.GET['email'])))
             UserBlog.objects.get(Q(forget_password_code=(request.GET['code'])) & Q(email=request.GET['email']))
@@ -213,14 +215,17 @@ class ChangePass(View):
 
     def post(self, request):
         filled_form = self.form(request.POST)
-
+        # filled_form.is_valid()
+        # filled_form.clean_data()
         if filled_form.is_valid():
             user = UserBlog.objects.get(Q(forget_password_code=request.POST['code']) & Q(email=request.POST['email']))
 
-            user.password = request.POST['password11']
+            user.password = make_password(request.POST['password11'])
             user.save()
 
             return redirect(reverse('blog:login'))
+        else:
+            return render(request, 'blog/change_pass.html', context={'form': filled_form})
 
 # def logout_view(request):
 #     logout(request)
