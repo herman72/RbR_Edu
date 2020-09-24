@@ -1,5 +1,6 @@
 """import packages"""
 import urllib
+from datetime import datetime, timedelta
 
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
@@ -135,12 +136,15 @@ class PostDetails(View):
 
 
 class FollowerList(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    # @method_decorator(login_required(login_url='/blog/login/?next=/blog/FollowList',))
     def get(self, request):
-        login_user = UserBlog.objects.get(username=request.user.username)
-        return render(request, 'blog/FollowList.html',
-                      context={'users': UserBlog.objects.all(), 'loginuser': request.user,
-                               'followers': login_user.following.all()})
+        if not request.user.is_authenticated:
+            return redirect('%s?next=%s' % ('/blog/login', request.path))
+        else:
+            login_user = UserBlog.objects.get(username=request.user.username)
+            return render(request, 'blog/FollowList.html',
+                          context={'users': UserBlog.objects.all(), 'loginuser': request.user,
+                                   'followers': login_user.following.all()})
 
 
 class RequestFollow(View):
@@ -155,7 +159,7 @@ class RequestFollow(View):
 
 
 class RequestUnfollow(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name='/blog/FollowList'))
     def post(self, request):
         user = UserBlog.objects.get(username=request.user.username)
         user_want_follow = UserBlog.objects.get(username=request.POST['username'])
@@ -185,7 +189,7 @@ class ForgetPassForm(View):
 
             unique_id = get_random_string(length=32)
             user = UserBlog.objects.get(email=request.POST['email'])
-
+            user.forget_password_code_expiration = datetime.now(timezone.utc)
             user.forget_password_code = unique_id
             user.save()
 
@@ -205,11 +209,16 @@ class ChangePass(View):
     def get(self, request):
 
         try:
-            print(UserBlog.objects.get(Q(email=request.GET['email'])))
-            UserBlog.objects.get(Q(forget_password_code=(request.GET['code'])) & Q(email=request.GET['email']))
-            blank_form = self.form(request.GET)
 
-            return render(request, 'blog/change_pass.html', context={'form': blank_form})
+            user = UserBlog.objects.get(Q(forget_password_code=(request.GET['code'])) & Q(email=request.GET['email']))
+            if (datetime.now(timezone.utc)) - user.forget_password_code_expiration < timedelta(seconds=30):
+
+                blank_form = self.form(request.GET)
+
+                return render(request, 'blog/change_pass.html', context={'form': blank_form})
+            else:
+                return HttpResponse(status=400, content='Code Validation timeout')
+
         except:
             return HttpResponse(status=400, content='bad request')
 

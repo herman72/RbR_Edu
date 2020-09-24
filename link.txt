@@ -1,1 +1,1 @@
-http://127.0.0.1:8000/blog/change_pass?email=javad%40javad.com&code=yA9mGvVq9VUtL64qu8WKMfU2XAtqZwzA
+http://127.0.0.1:8000/blog/change_pass?email=javad%40javad.com&code=mnyShHyfI2XXancZyiZ8DN1CND4Vcf1q
