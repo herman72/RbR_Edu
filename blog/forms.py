@@ -3,7 +3,14 @@ from django.forms import HiddenInput
 
 from blog.models import Post, Comment, UserBlog
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+
+
+class AuthenticationFormMyself(AuthenticationForm):
+    next = forms.CharField(max_length=255, widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        fields = ("username", "password", "next")
 
 
 class PostForm(forms.ModelForm):
@@ -60,5 +67,3 @@ class ChangePassForm(forms.Form):
             raise ValidationError("no same pass")
         else:
             return self.cleaned_data['password11']
-
-

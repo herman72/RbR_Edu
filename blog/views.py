@@ -12,11 +12,12 @@ from django.http import HttpResponse
 from blog.models import Post, UserBlog
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-from django.contrib.auth.forms import AuthenticationForm
+# from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
-from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetForm, ChangePassForm
+from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetForm, ChangePassForm, \
+    AuthenticationFormMyself
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -24,7 +25,7 @@ from django.conf import settings
 
 
 class PostList(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login', redirect_field_name='next=FollowList'))
     def get(self, request):
         login_user = UserBlog.objects.get(username=request.user.username)
         posts = Post.objects.filter(Q(author__in=login_user.following.all()) | Q(author=request.user))
@@ -50,34 +51,37 @@ class Register(View):
 
             return redirect(reverse('blog:post_list'))
         else:
-            form_sign = self.signup_form()
+            # form_sign = self.signup_form()
             return render(request, template_name='blog/signup.html',
                           context={'form_sign': form_sign})
 
 
 class Login(View):
-    Login_Form = AuthenticationForm
+    Login_Form = AuthenticationFormMyself
 
     def get(self, request):
-        form = self.Login_Form()
+        print(request.GET)
+        blank_form = self.Login_Form({'next': request.GET})
+        # blank_form = blank_form(initial={'next':  request.GET})
         return render(request, template_name='blog/login.html',
-                      context={'form_login': form})
+                      context={'form_login': blank_form})
 
     def post(self, request):
 
-        form = self.Login_Form(data=request.POST)
-
-        if form.is_valid():
+        filled_form = self.Login_Form(data=request.POST)
+        print('helooooooooooooooo',request.POST.get('next'))
+        if filled_form.is_valid():
             user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
             login(request, user)
             # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
             return redirect(reverse('blog:post_list'))
+            # return redirect((request.POST['next']))
             # return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
 
         else:
-            form = self.Login_Form()
+            filled_form = self.Login_Form()
             return render(request, template_name='blog/login.html',
-                          context={'form_login': form})
+                          context={'form_login': filled_form})
 
 
 class NewPost(View):
@@ -224,8 +228,7 @@ class ChangePass(View):
 
     def post(self, request):
         filled_form = self.form(request.POST)
-        # filled_form.is_valid()
-        # filled_form.clean_data()
+
         if filled_form.is_valid():
             user = UserBlog.objects.get(Q(forget_password_code=request.POST['code']) & Q(email=request.POST['email']))
 
