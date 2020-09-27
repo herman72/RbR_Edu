@@ -25,7 +25,7 @@ from django.conf import settings
 
 
 class PostList(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name='next=FollowList'))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog', redirect_field_name=''))
     def get(self, request):
         login_user = UserBlog.objects.get(username=request.user.username)
         posts = Post.objects.filter(Q(author__in=login_user.following.all()) | Q(author=request.user))
@@ -60,22 +60,26 @@ class Login(View):
     Login_Form = AuthenticationFormMyself
 
     def get(self, request):
-        print(request.GET)
-        blank_form = self.Login_Form({'next': request.GET})
-        # blank_form = blank_form(initial={'next':  request.GET})
-        return render(request, template_name='blog/login.html',
-                      context={'form_login': blank_form})
+        try:
+
+            blank_form = self.Login_Form(data={'next': request.GET['next']})
+            # blank_form = blank_form(initial={'next':  request.GET})
+            return render(request, template_name='blog/login.html',
+                         context={'form_login': blank_form})
+        except:
+            blank_form = self.Login_Form()
+            return render(request, template_name='blog/login.html',
+                          context={'form_login': blank_form})
 
     def post(self, request):
 
         filled_form = self.Login_Form(data=request.POST)
-        print('helooooooooooooooo',request.POST.get('next'))
         if filled_form.is_valid():
             user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
             login(request, user)
             # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-            return redirect(reverse('blog:post_list'))
-            # return redirect((request.POST['next']))
+            # return redirect(reverse('blog:post_list'))
+            return redirect(request.POST.get('next'))
             # return render(request, 'blog/post_list.html', context={'posts': posts, 'user': request.user})
 
         else:
@@ -87,13 +91,13 @@ class Login(View):
 class NewPost(View):
     form = PostForm
 
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/new_post', redirect_field_name=''))
     def get(self, request):
 
         new_form = self.form()
         return render(request, 'blog/post_edit.html', {'form': new_form})
 
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/new_post', redirect_field_name=''))
     def post(self, request):
         new_form = self.form(request.POST)
         if new_form.is_valid():
@@ -110,12 +114,12 @@ class NewPost(View):
 class AddComment(View):
     form = CommentForm
 
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/post/<int:pk>/comment/', redirect_field_name=''))
     def get(self, request, pk):
         blank_comment_form = self.form()
         return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
 
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/post/<int:pk>/comment/', redirect_field_name=''))
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         fill_comment = self.form(request.POST)
@@ -133,7 +137,7 @@ class AddComment(View):
 
 
 class PostDetails(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/post/<int:pk>', redirect_field_name=''))
     def get(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         return render(request, 'blog/post_detail.html', context={'post': post})
@@ -152,7 +156,7 @@ class FollowerList(View):
 
 
 class RequestFollow(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/request_follow', redirect_field_name=''))
     def post(self, request):
         user = UserBlog.objects.get(username=request.user.username)
         user_want_follow = UserBlog.objects.get(username=request.POST['username'])
@@ -163,7 +167,7 @@ class RequestFollow(View):
 
 
 class RequestUnfollow(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name='/blog/FollowList'))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/request_unfollow', redirect_field_name=''))
     def post(self, request):
         user = UserBlog.objects.get(username=request.user.username)
         user_want_follow = UserBlog.objects.get(username=request.POST['username'])
@@ -173,7 +177,7 @@ class RequestUnfollow(View):
 
 
 class Logout(View):
-    @method_decorator(login_required(login_url='/blog/login', redirect_field_name=''))
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/logout', redirect_field_name=''))
     def get(self, request):
         logout(request)
 
@@ -181,12 +185,15 @@ class Logout(View):
 
 
 class ForgetPassForm(View):
+
     form = PasswordResetForm
 
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/reset_pass', redirect_field_name=''))
     def get(self, request):
         blank_form = self.form()
         return render(request, 'blog/password_reset_form.html', context={'form': blank_form})
 
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/reset_pass', redirect_field_name=''))
     def post(self, request):
         filled_form = self.form(request.POST)
         if filled_form.is_valid():
@@ -210,6 +217,7 @@ class ForgetPassForm(View):
 class ChangePass(View):
     form = ChangePassForm
 
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/change_pass', redirect_field_name=''))
     def get(self, request):
 
         try:
@@ -226,6 +234,7 @@ class ChangePass(View):
         except:
             return HttpResponse(status=400, content='bad request')
 
+    @method_decorator(login_required(login_url='/blog/login/?next=/blog/change_pass', redirect_field_name=''))
     def post(self, request):
         filled_form = self.form(request.POST)
 
