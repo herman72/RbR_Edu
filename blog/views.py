@@ -1,18 +1,15 @@
 """import packages"""
 import urllib
-from datetime import datetime, timedelta
-
-from django.contrib.auth.hashers import make_password
-from django.core.exceptions import ValidationError
 from django.views import View
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
 from django.http import HttpResponse
 from blog.models import Post, UserBlog
+from datetime import datetime, timedelta
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-# from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
@@ -20,6 +17,9 @@ from blog.forms import PostForm, CommentForm, UserCreationForm, PasswordResetFor
     AuthenticationFormMyself
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.exceptions import ValidationError
+
+# from django.contrib.auth.forms import AuthenticationForm
 
 """Class Based view"""
 
@@ -65,7 +65,7 @@ class Login(View):
             blank_form = self.Login_Form(data={'next': request.GET['next']})
             # blank_form = blank_form(initial={'next':  request.GET})
             return render(request, template_name='blog/login.html',
-                         context={'form_login': blank_form})
+                          context={'form_login': blank_form})
         except:
             blank_form = self.Login_Form()
             return render(request, template_name='blog/login.html',
@@ -114,12 +114,14 @@ class NewPost(View):
 class AddComment(View):
     form = CommentForm
 
-    @method_decorator(login_required(login_url='/blog/login/?next=/blog/post/<int:pk>/comment/', redirect_field_name=''))
+    @method_decorator(
+        login_required(login_url='/blog/login/?next=/blog/post/<int:pk>/comment/', redirect_field_name=''))
     def get(self, request, pk):
         blank_comment_form = self.form()
         return render(request, 'blog/add_comment_to_post.html', {'form': blank_comment_form})
 
-    @method_decorator(login_required(login_url='/blog/login/?next=/blog/post/<int:pk>/comment/', redirect_field_name=''))
+    @method_decorator(
+        login_required(login_url='/blog/login/?next=/blog/post/<int:pk>/comment/', redirect_field_name=''))
     def post(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         fill_comment = self.form(request.POST)
@@ -185,7 +187,6 @@ class Logout(View):
 
 
 class ForgetPassForm(View):
-
     form = PasswordResetForm
 
     @method_decorator(login_required(login_url='/blog/login/?next=/blog/reset_pass', redirect_field_name=''))
